@@ -21,14 +21,19 @@ class Command():
         return out.decode('utf-8'), err.decode('utf-8')
 
 
-def export_schema(keyspace='', backup_path=''):
+def export_schema(keyspace='', backup_path='', user='', password=''):
     """
     Args:
         keyspace (`string`): specify a keyspace to take snapshot
         backup_path (`string`): path to store the Cassandra snapshot files
+        user (`string`): cassandra user
+        password (`string`): cassandra password
     """
     with open(os.path.join(backup_path, EXPORT_SCHEMA_FILE), 'wt') as f:
-        cmd = ['cqlsh', '-e', 'DESCRIBE KEYSPACE {}'.format(keyspace)]
+        cmd = ['cqlsh']
+        if user != '' and password != '':
+            cmd += ['-u', user, '-p', password]
+        cmd += ['-e', 'DESCRIBE KEYSPACE {}'.format(keyspace)]
         logging.info(' '.join(cmd))
         p = subprocess.Popen(cmd, stdout=f)
         out, err = p.communicate()
@@ -36,14 +41,19 @@ def export_schema(keyspace='', backup_path=''):
         logging.info(out)
 
 
-def snapshot(snapshot_tag='', keyspace=''):
+def snapshot(snapshot_tag='', keyspace='', user='', password=''):
     """
     Args:
         snapshot_tag (`string`): Name for the snapshot directory,
             installation_path/data/keyspace_name/table-UID/snapshots/snapshot_name
         keyspace (`string`): specify a keyspace to take snapshot
+        user (`string`): cassandra user
+        password (`string`): cassandra password
     """
-    cmd = ['nodetool', 'snapshot', '-t', snapshot_tag, keyspace]
+    cmd = ['nodetool']
+    if user != '' and password != '':
+        cmd += ['-u', user, '-pw', password]
+    cmd += ['snapshot', '-t', snapshot_tag, keyspace]
     logging.info(' '.join(cmd))
     out, err = Command.run(cmd)
     logging.error(err)
@@ -51,14 +61,19 @@ def snapshot(snapshot_tag='', keyspace=''):
     logging.info(out)
 
 
-def clear_snapshot(snapshot_tag='', keyspace=''):
+def clear_snapshot(snapshot_tag='', keyspace='', user='', password=''):
     """
     Args:
         snapshot_tag (`string`): Name for the snapshot directory,
             installation_path/data/keyspace_name/table-UID/snapshots/snapshot_name
         keyspace (`string`): specify a keyspace to take snapshot
+        user (`string`): cassandra user
+        password (`string`): cassandra password
     """
-    cmd = ['nodetool', 'clearsnapshot', '-t', snapshot_tag, keyspace]
+    cmd = ['nodetool']
+    if user != '' and password != '':
+        cmd += ['-u', user, '-pw', password]
+    cmd += ['clearsnapshot', '-t', snapshot_tag, keyspace]
     logging.info(' '.join(cmd))
     out, err = Command.run(cmd)
     logging.error(err)
@@ -68,7 +83,9 @@ def clear_snapshot(snapshot_tag='', keyspace=''):
 
 def run(cassandra_data_path='/var/lib/cassandra/data',
         keyspace='',
-        backup_path='/cassandra-backup'):
+        backup_path='/cassandra-backup',
+        user='',
+        password=''):
     """This is a tool for moving files from Cassandra database snapshot
     The output folder layout should be:
         cassandra-backup
@@ -93,10 +110,12 @@ def run(cassandra_data_path='/var/lib/cassandra/data',
         cassandra_data_path (`string`): Cassandra data path for snapshot
         keyspace (`string`): specify a keyspace to take snapshot
         backup_path (`string`): path to store the Cassandra snapshot files
+        user (`string`): cassandra user
+        password (`string`): cassandra password
     """
     # snapshot
     snapshot_tag = datetime.now().strftime('%Y%m%d%H%M%S')
-    snapshot(snapshot_tag, keyspace)
+    snapshot(snapshot_tag, keyspace, user, password)
 
     # reset path
     snapshot_path = os.path.join(backup_path, snapshot_tag)
@@ -105,7 +124,7 @@ def run(cassandra_data_path='/var/lib/cassandra/data',
     node_backup_path = os.path.join(snapshot_path, NODE_BACKUP_FOLDER)
     os.makedirs(node_backup_path)
 
-    export_schema(keyspace, backup_path)
+    export_schema(keyspace, backup_path, user, password)
 
     list_source = os.listdir(os.path.join(cassandra_data_path, keyspace))
     '''
@@ -146,7 +165,7 @@ def run(cassandra_data_path='/var/lib/cassandra/data',
         shutil.rmtree(source_path)
     logging.info('All table snapshots has replica to {}'.format(backup_path))
     # clear snapshot
-    clear_snapshot(snapshot_tag, keyspace)
+    clear_snapshot(snapshot_tag, keyspace, user, password)
 
 
 if __name__ == '__main__':
@@ -178,7 +197,13 @@ if __name__ == '__main__':
                         help=('path to store the Cassandra snapshot files, '
                               'defaults to {}').format(default_backup_path),
                         default=default_backup_path)
+    parser.add_argument('--user', type=str,
+                        help=('user',
+                        default='')
+    parser.add_argument('--password', type=str,
+                        help=('password',
+                        default='')
     args = parser.parse_args()
 
     # packing
-    run(args.cassandra_data_path, args.keyspace, args.backup_path)
+    run(args.cassandra_data_path, args.keyspace, args.backup_path, args.user, args.password)
