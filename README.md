@@ -49,7 +49,7 @@ https://docs.datastax.com/en/dse/5.1/dse-admin/datastax_enterprise/operations/op
 #### Backup script
 ```bash
 root@4292c12b9d2a:/# python backup.py --help
-usage: backup.py [-h] [--cassandra_data_path CASSANDRA_DATA_PATH] --keyspace KEYSPACE [--backup_path BACKUP_PATH]
+usage: backup.py [-h] [--cassandra_data_path CASSANDRA_DATA_PATH] --keyspace KEYSPACE [--backup_path BACKUP_PATH] [--user USER] [--password PASSWORD]
 
 This tool is able to move cassandra keyspace snapshotwith tag
 
@@ -61,6 +61,8 @@ optional arguments:
   --backup_path BACKUP_PATH
                         path to store the Cassandra snapshot files, defaults
                         to /cassandra-backup
+  --user USER           user
+  --password PASSWORD   password
 root@4292c12b9d2a:/# python backup.py --keyspace test
 ```
 Now you can copy the snapshot folder:
@@ -114,7 +116,7 @@ https://docs.datastax.com/en/dse/5.1/dse-admin/datastax_enterprise/operations/op
 #### Restore script
 ```bash
 root@4292c12b9d2a:/# python restore.py --help
-usage: restore.py [-h] [--cassandra_data_path CASSANDRA_DATA_PATH] --keyspace KEYSPACE --snapshot_tag SNAPSHOT_TAG [--backup_path BACKUP_PATH]
+usage: restore.py [-h] [--cassandra_data_path CASSANDRA_DATA_PATH] --keyspace KEYSPACE --snapshot_tag SNAPSHOT_TAG [--backup_path BACKUP_PATH] [--user USER] [--password PASSWORD]
 
 This tool is able to move cassandra keyspace snapshotwith tag
 
@@ -128,6 +130,8 @@ optional arguments:
   --backup_path BACKUP_PATH
                         Cassandra data path for snapshot, defaults to
                         /cassandra-backup
+  --user USER           user
+  --password PASSWORD   password
 
 root@4292c12b9d2a:/# python restore.py --keyspace test --snapshot 20200910172500
 ```
