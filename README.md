@@ -116,7 +116,7 @@ https://docs.datastax.com/en/dse/5.1/dse-admin/datastax_enterprise/operations/op
 #### Restore script
 ```bash
 root@4292c12b9d2a:/# python restore.py --help
-usage: restore.py [-h] [--cassandra_data_path CASSANDRA_DATA_PATH] --keyspace KEYSPACE --snapshot_tag SNAPSHOT_TAG [--backup_path BACKUP_PATH] [--user USER] [--password PASSWORD]
+usage: restore.py [-h] [--cassandra_data_path CASSANDRA_DATA_PATH] --keyspace KEYSPACE --snapshot_tag SNAPSHOT_TAG [--backup_path BACKUP_PATH] [--user USER] [--password PASSWORD] [--linux_group CASSANDRA_GROUP] [--linux_user CASSANDRA_USER]
 
 This tool is able to move cassandra keyspace snapshotwith tag
 
@@ -132,6 +132,10 @@ optional arguments:
                         /cassandra-backup
   --user USER           user
   --password PASSWORD   password
+  --linux_group CASSANDRA_GROUP
+  			linux group
+  --linux_user CASSANDRA_USER
+  			linux_user
 
 root@4292c12b9d2a:/# python restore.py --keyspace test --snapshot 20200910172500
 ```
