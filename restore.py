@@ -255,16 +255,16 @@ if __name__ == '__main__':
                               'defaults to {}').format(DEFAULT_BACKUP_PATH),
                         default=DEFAULT_BACKUP_PATH)
     parser.add_argument('--user', type=str,
-                        help=('user',
+                        help=('user'),
                         default='')
     parser.add_argument('--password', type=str,
-                        help=('password',
+                        help=('password'),
                         default='')
     parser.add_argument('--linux_group', type=str,
-                        help=('cassandra linux group',
+                        help=('cassandra linux group'),
                         default=CASSANDRA_GROUP)
     parser.add_argument('--linux_user', type=str,
-                        help=('cassandra linux user',
+                        help=('cassandra linux user'),
                         default=CASSANDRA_USER)
     args = parser.parse_args()
 
