@@ -198,10 +198,10 @@ if __name__ == '__main__':
                               'defaults to {}').format(default_backup_path),
                         default=default_backup_path)
     parser.add_argument('--user', type=str,
-                        help=('user',
+                        help=('user'),
                         default='')
     parser.add_argument('--password', type=str,
-                        help=('password',
+                        help=('password'),
                         default='')
     args = parser.parse_args()
 
